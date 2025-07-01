@@ -32,14 +32,7 @@ EXCLUDED_FOLDERS = {
     "Thumbs.db", "temp", "tmp", "cache"
 }
 
-WATERMARK_CONFIG = {
-    "项目名称": "科特迪瓦邦杜库边境路",
-    "施工区域": "项目营地",
-    "施工内容": "每日班前教育",
-    "字体大小": 36,
-    "背景色": (100, 149, 237, 200),
-    "文字颜色": (255, 255, 255, 255)
-}
+# 水印配置已移至BandukuGUI类的__init__方法中，支持动态修改
 
 PROCESS_CONFIG = {
     "目标宽度": 1920,
@@ -63,9 +56,20 @@ class BandukuGUI:
         # 工作目录设置
         self.base_dir = None
         self.is_processing = False
+        self.stop_processing = False  # 停止处理标志
         
         # 动态班组配置 - 运行时根据目录内容生成
         self.groups_config = {}
+        
+        # 动态水印配置 - 可在GUI中调整
+        self.watermark_config = {
+            "项目名称": "科特迪瓦邦杜库边境路",
+            "施工区域": "项目营地", 
+            "施工内容": "每日班前教育",
+            "字体大小": 36,
+            "背景色": (100, 149, 237, 200),
+            "文字颜色": (255, 255, 255, 255)
+        }
         
         self.setup_ui()
         
@@ -94,10 +98,11 @@ class BandukuGUI:
         control_frame = ttk.Frame(main_frame)
         control_frame.grid(row=2, column=0, columnspan=2, pady=10)
         
-        self.start_btn = ttk.Button(control_frame, text="🎯 开始处理", command=self.start_processing)
+        self.start_btn = ttk.Button(control_frame, text="🎯 开始处理", command=self.toggle_processing)
         self.start_btn.pack(side=tk.LEFT, padx=(0, 10))
         
         ttk.Button(control_frame, text="⚙️ 配置班组", command=self.configure_groups).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Button(control_frame, text="🏷️ 项目配置", command=self.configure_project).pack(side=tk.LEFT, padx=(0, 10))
         ttk.Button(control_frame, text="📁 打开结果", command=self.open_results).pack(side=tk.LEFT)
         
         # 进度条
@@ -472,7 +477,75 @@ class BandukuGUI:
                 os.system(f"xdg-open '{result_dir}'")
         else:
             messagebox.showinfo("提示", "结果目录不存在，请先进行处理")
+    
+    def configure_project(self):
+        """配置项目信息"""
+        config_window = tk.Toplevel(self.root)
+        config_window.title("项目配置")
+        config_window.geometry("450x300")
+        config_window.grab_set()
+        
+        frame = ttk.Frame(config_window, padding="15")
+        frame.pack(fill=tk.BOTH, expand=True)
+        
+        ttk.Label(frame, text="🏷️ 项目信息配置", font=("Arial", 14, "bold")).pack(pady=(0, 15))
+        
+        # 输入字段
+        fields = [
+            ("项目名称", "项目名称", self.watermark_config["项目名称"]),
+            ("施工区域", "施工区域", self.watermark_config["施工区域"]),
+            ("施工内容", "施工内容", self.watermark_config["施工内容"])
+        ]
+        
+        entries = {}
+        for label_text, key, value in fields:
+            row_frame = ttk.Frame(frame)
+            row_frame.pack(fill=tk.X, pady=8)
             
+            ttk.Label(row_frame, text=label_text, width=12).pack(side=tk.LEFT)
+            entry = ttk.Entry(row_frame, width=30)
+            entry.insert(0, str(value))
+            entry.pack(side=tk.LEFT, padx=(10, 0))
+            entries[key] = entry
+        
+        def save_project_config():
+            try:
+                # 更新配置
+                self.watermark_config["项目名称"] = entries["项目名称"].get().strip()
+                self.watermark_config["施工区域"] = entries["施工区域"].get().strip()
+                self.watermark_config["施工内容"] = entries["施工内容"].get().strip()
+                
+                if not all([self.watermark_config["项目名称"], 
+                           self.watermark_config["施工区域"], 
+                           self.watermark_config["施工内容"]]):
+                    messagebox.showerror("错误", "所有字段都必须填写")
+                    return
+                
+                config_window.destroy()
+                self.log("已更新项目配置")
+                messagebox.showinfo("成功", "项目配置已保存")
+                
+            except Exception as e:
+                messagebox.showerror("错误", f"保存配置时出错: {e}")
+        
+        # 按钮
+        btn_frame = ttk.Frame(frame)
+        btn_frame.pack(fill=tk.X, pady=(20, 0))
+        
+        ttk.Button(btn_frame, text="💾 保存", command=save_project_config).pack(side=tk.LEFT)
+        ttk.Button(btn_frame, text="❌ 取消", command=config_window.destroy).pack(side=tk.RIGHT)
+        
+    def toggle_processing(self):
+        """切换处理状态：开始或停止"""
+        if self.is_processing:
+            # 当前正在处理，设置停止标志
+            self.stop_processing = True
+            self.start_btn.config(text="⏳ 正在停止...", state="disabled")
+            self.log("⏹️ 用户请求停止处理...", "WARNING")
+        else:
+            # 当前未处理，开始处理
+            self.start_processing()
+    
     def start_processing(self):
         if not self.base_dir:
             messagebox.showwarning("警告", "请先选择工作目录")
@@ -486,9 +559,10 @@ class BandukuGUI:
             messagebox.showinfo("提示", "正在处理中，请等待完成")
             return
             
-        # 在新线程中运行处理
+        # 重置停止标志并开始处理
+        self.stop_processing = False
         self.is_processing = True
-        self.start_btn.config(state="disabled")
+        self.start_btn.config(text="⏹️ 停止处理", state="normal")
         thread = threading.Thread(target=self.run_processing, daemon=True)
         thread.start()
         
@@ -509,8 +583,12 @@ class BandukuGUI:
             messagebox.showerror("错误", f"处理过程中出现错误:\n{str(e)}")
         finally:
             self.is_processing = False
-            self.start_btn.config(state="normal")
-            self.status_var.set("处理完成")
+            self.start_btn.config(text="🎯 开始处理", state="normal")
+            if self.stop_processing:
+                self.status_var.set("已停止处理")
+                self.log("⏹️ 处理已停止", "WARNING")
+            else:
+                self.status_var.set("处理完成")
             self.progress_var.set(0)
 
 class BandukuProcessor:
@@ -730,11 +808,11 @@ class BandukuProcessor:
             font = ImageFont.load_default()
             self.gui.log("警告：使用默认字体，中文可能显示异常", "WARNING")
 
-        # 水印内容
+        # 水印内容 - 使用动态配置
         text_lines = [
-            ("科特迪瓦邦杜库边境路", (100, 149, 237)),
-            "施 工 区 域：项目营地",
-            "施 工 内 容：每日班前教育",
+            (self.gui.watermark_config["项目名称"], (100, 149, 237)),
+            f"施 工 区 域：{self.gui.watermark_config['施工区域']}",
+            f"施 工 内 容：{self.gui.watermark_config['施工内容']}",
             f"施 工 班 组：{group_name}",
             f"拍 摄 时 间：{datetime.strptime(date_str, '%Y%m%d').strftime('%Y.%m.%d')}"
         ]
@@ -823,6 +901,11 @@ class BandukuProcessor:
         processed_count = 0
         
         for i, image_file in enumerate(image_files):
+            # 检查是否需要停止处理
+            if self.gui.stop_processing:
+                self.gui.log("⏹️ 水印处理被中断", "WARNING")
+                break
+                
             try:
                 output_path = self.output_dir / f"watermarked_{image_file.name}"
                 date_str = current_date.strftime("%Y%m%d")
@@ -912,6 +995,11 @@ class BandukuProcessor:
         total_groups = len(self.groups_config)
         
         for i, (group_key, group_config) in enumerate(self.groups_config.items()):
+            # 检查是否需要停止处理
+            if self.gui.stop_processing:
+                self.gui.log("⏹️ 收到停止信号，中断处理", "WARNING")
+                break
+                
             try:
                 # 更新总体进度
                 overall_progress = i / total_groups * 100
