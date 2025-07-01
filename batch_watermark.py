@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-邦杜库项目图片处理GUI版本 - 修正版
+Batch Watermark Desktop Application - 批量水印桌面应用
 完全自包含，无需外部脚本依赖
 """
 
@@ -35,7 +35,7 @@ EXCLUDED_FOLDERS = {
     "Thumbs.db", "temp", "tmp", "cache"
 }
 
-# 水印配置已移至BandukuGUI类的__init__方法中，支持动态修改
+# 水印配置已移至BatchWatermarkGUI类的__init__方法中，支持动态修改
 
 PROCESS_CONFIG = {
     "目标宽度": 1920,
@@ -50,10 +50,10 @@ PATHS = {
     "水印后目录": "水印后"
 }
 
-class BandukuGUI:
+class BatchWatermarkGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("邦杜库项目图片处理系统")
+        self.root.title("批量水印工具")
         self.root.geometry("800x600")
         
         # 工作目录设置
@@ -66,7 +66,7 @@ class BandukuGUI:
         
         # 动态水印配置 - 可在GUI中调整
         self.watermark_config = {
-            "项目名称": "科特迪瓦邦杜库边境路",
+            "项目名称": "我的项目",
             "施工区域": "项目营地", 
             "施工内容": "每日班前教育",
             "字体大小": 36,
@@ -82,7 +82,7 @@ class BandukuGUI:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # 标题
-        title_label = ttk.Label(main_frame, text="🚀 邦杜库项目图片处理自动化系统", 
+        title_label = ttk.Label(main_frame, text="🚀 批量水印工具", 
                                font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
         
@@ -571,7 +571,7 @@ class BandukuGUI:
         
     def run_processing(self):
         try:
-            processor = BandukuProcessor(self.base_dir, self, self.groups_config)
+            processor = WatermarkProcessor(self.base_dir, self, self.groups_config)
             success = processor.run_full_process()
             
             if success:
@@ -594,7 +594,7 @@ class BandukuGUI:
                 self.status_var.set("处理完成")
             self.progress_var.set(0)
 
-class BandukuProcessor:
+class WatermarkProcessor:
     def __init__(self, base_dir, gui, groups_config):
         self.base_dir = Path(base_dir)
         self.gui = gui
@@ -608,7 +608,7 @@ class BandukuProcessor:
         self.output_dir.mkdir(exist_ok=True)
         self.watermark_dir.mkdir(exist_ok=True)
         
-        self.gui.log("🚀 邦杜库项目图片处理系统启动")
+        self.gui.log("🚀 批量水印工具启动")
         self.gui.log(f"📁 工作目录: {self.base_dir}")
         self.gui.log(f"📊 配置班组数量: {len(self.groups_config)}")
 
@@ -954,7 +954,7 @@ class BandukuProcessor:
         return moved_count
 
     def process_single_group(self, group_key, group_config):
-        """处理单个班组的完整流程"""
+        """处理单个班组"""
         self.gui.log(f"🎯 开始处理班组: {group_key}", "INFO")
         
         group_folder = group_config["folder"]
@@ -990,9 +990,9 @@ class BandukuProcessor:
         return True
 
     def run_full_process(self):
-        """运行完整的自动化流程"""
+        """批量处理所有班组"""
         start_time = datetime.now()
-        self.gui.log("🌟 开始完整自动化处理流程")
+        self.gui.log("🌟 开始批量处理所有班组")
         
         success_count = 0
         total_groups = len(self.groups_config)
@@ -1020,7 +1020,7 @@ class BandukuProcessor:
         end_time = datetime.now()
         duration = end_time - start_time
         
-        self.gui.log("🎊 自动化处理流程完成!")
+        self.gui.log("🎊 批量处理完成!")
         self.gui.log(f"📊 处理统计: {success_count}/{total_groups} 个班组成功")
         self.gui.log(f"⏱️  总耗时: {duration}")
         
@@ -1030,7 +1030,7 @@ class BandukuProcessor:
             self.gui.log("📊 开始生成最终Excel报告...")
             excel_success = self.generate_excel_report()
             if excel_success:
-                self.gui.log("✨ 完整流程已完成，包括Excel报告生成!", "SUCCESS")
+                self.gui.log("✨ 全部处理完成，包括Excel报告生成!", "SUCCESS")
             else:
                 self.gui.log("⚠️ Excel报告生成失败，但水印处理已完成", "WARNING")
         elif self.gui.stop_processing:
@@ -1153,7 +1153,7 @@ class BandukuProcessor:
 
 def main():
     root = tk.Tk()
-    app = BandukuGUI(root)
+    app = BatchWatermarkGUI(root)
     
     try:
         root.mainloop()

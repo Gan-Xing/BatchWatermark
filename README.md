@@ -1,439 +1,366 @@
-# 邦杜库项目图片处理系统 🚀
+# BatchWatermark - Batch Image Watermarking Desktop Application 🚀
 
-一个专为邦杜库项目设计的智能图片水印处理和Excel报告生成工具。支持多班组批量处理，自动添加项目信息水印，并生成包含所有图片的Excel报告文档。
+A powerful desktop application for batch image watermarking with automatic Excel report generation. Built with Python and Tkinter, featuring intelligent group detection, customizable watermarks, and comprehensive project documentation.
 
-## 📋 目录
+## 📋 Table of Contents
 
-- [🎯 项目简介](#-项目简介)
-- [⚡ 快速开始](#-快速开始)
-- [✨ 功能特性](#-功能特性)
-- [📖 使用指南](#-使用指南)
-- [👨‍💻 开发指南](#-开发指南)
-- [🔧 技术栈](#-技术栈)
-- [❓ 常见问题](#-常见问题)
-- [📝 更新日志](#-更新日志)
+- [🎯 Overview](#-overview)
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [🔧 Technology Stack](#-technology-stack)
+- [🏗️ Project Structure](#️-project-structure)
+- [⚙️ Installation](#️-installation)
+- [🛠️ Development](#️-development)
+- [📦 Building](#-building)
+- [🧪 Testing](#-testing)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
-## 🎯 项目简介
+## 🎯 Overview
 
-邦杜库项目图片处理系统是一个基于Python开发的图形化应用程序，专门用于工程项目的图片标准化处理。系统能够：
+BatchWatermark is a cross-platform desktop application designed for professional image processing workflows. It automatically detects image folders, applies customizable watermarks with project information and timestamps, and generates comprehensive Excel reports.
 
-- **智能识别班组** - 自动扫描目录结构，识别各班组文件夹
-- **批量添加水印** - 为每张图片添加包含项目信息的专业水印
-- **生成Excel报告** - 自动创建包含所有处理图片的Excel文档
-- **可视化操作** - 友好的图形界面，无需命令行操作
-- **实时进度监控** - 清晰显示处理进度和状态信息
+### Key Capabilities
+- **Intelligent Group Detection**: Automatically scans directory structures and identifies image folders
+- **Batch Watermarking**: Processes multiple image groups with customizable watermark templates
+- **Excel Report Generation**: Creates detailed reports with embedded processed images
+- **Real-time Progress Monitoring**: Visual progress indicators and detailed logging
+- **Cross-platform Support**: Runs on Windows, macOS, and Linux
 
-## ⚡ 快速开始
+## ✨ Features
 
-### 🎮 普通使用者
+### 🔍 Smart Folder Detection
+- Automatically discovers image folders in directory structures
+- Filters out system folders and irrelevant directories
+- Supports multiple image formats (JPG, PNG, GIF, BMP, WEBP)
+- Dynamic configuration based on detected content
 
-如果您只想使用应用程序，而不需要修改代码：
+### 🎨 Advanced Watermarking
+- **Project Information**: Customizable project name, area, and content fields
+- **Group Identification**: Automatic group name labeling
+- **Date Stamping**: Sequential date watermarks with configurable start dates
+- **Professional Layout**: Rounded corners, gradient backgrounds, and optimized typography
+- **High Quality Output**: Maintains image quality while adding clear watermarks
 
-1. **获取应用程序**
-   - 从发布页面下载 `邦杜库图片处理系统_完整版.app`（macOS）
-   - 或下载 `邦杜库图片处理系统_完整版/` 文件夹（Windows/Linux）
+### 📊 Excel Report Generation
+- **Multi-sheet Reports**: Separate Excel worksheets for each image group
+- **Embedded Images**: Direct image embedding with automatic sizing
+- **Professional Formatting**: Standardized layout with proper spacing
+- **Batch Export**: Single-click generation of comprehensive reports
 
-2. **运行应用**
-   - **macOS**: 双击 `.app` 文件即可运行
-   - **其他系统**: 运行文件夹中的可执行文件
+### 🎛️ Flexible Configuration
+- **Project Settings**: Customizable project information and watermark content
+- **Group Management**: Individual group configuration for dates, counts, and output folders
+- **Batch Operations**: Mass configuration updates for multiple groups
+- **Real-time Preview**: Immediate application of configuration changes
 
-3. **开始使用**
-   - 按照[使用指南](#-使用指南)进行操作
+### 🔄 User Experience
+- **Progress Tracking**: Real-time progress bars and status updates
+- **Interrupt Control**: Safe start/stop processing with graceful shutdown
+- **Detailed Logging**: Comprehensive operation logs with timestamps
+- **Error Handling**: User-friendly error messages and recovery suggestions
 
-### 👨‍💻 开发者
+## 🚀 Quick Start
 
-如果您需要修改代码或重新打包：
+### For Developers
 
-1. **环境准备**
+1. **Clone the Repository**
    ```bash
-   # 确保已安装Python 3.8+
-   python --version
-   
-   # 克隆或下载项目代码
-   cd 项目目录
+   git clone <repository-url>
+   cd BatchWatermark
    ```
 
-2. **安装依赖**
+2. **Set Up Environment**
    ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **运行开发版本**
-   ```bash
-   python banduku_gui_fixed.py
-   ```
-
-4. **打包应用程序**
-   ```bash
-   # macOS/Linux 推荐使用onedir模式
-   pyinstaller --onedir --windowed --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
-   
-   # Windows可以使用onefile模式
-   pyinstaller --onefile --windowed --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
-   ```
-
-## ✨ 功能特性
-
-### 🔍 智能班组检测
-- **自动扫描**: 智能识别目录中包含图片的班组文件夹
-- **动态配置**: 根据检测结果自动生成班组配置
-- **灵活过滤**: 自动排除系统文件夹和无关目录
-
-### 🎨 专业水印处理
-- **项目信息水印**: 包含项目名称、施工区域、施工内容
-- **班组标识**: 自动标注施工班组名称
-- **时间戳**: 自动添加按日期递增的拍摄时间
-- **高质量输出**: 保持图片质量的同时添加清晰水印
-
-### 📊 Excel报告生成
-- **多工作表**: 每个班组生成独立的Excel工作表
-- **图片嵌入**: 直接在Excel中显示所有处理后的图片
-- **自动排版**: 智能调整图片尺寸和间距
-- **标准格式**: 生成符合项目要求的标准化报告
-
-### 🎛️ 灵活配置管理
-- **项目信息配置**: 可自定义项目名称、区域、内容等
-- **班组参数调整**: 支持修改处理月份、天数、起始日期
-- **实时预览**: 配置更改立即生效并应用
-
-### 🔄 用户体验优化
-- **进度监控**: 实时显示处理进度和当前状态
-- **中断控制**: 支持随时安全停止和恢复处理
-- **日志记录**: 详细记录操作过程和结果
-- **错误处理**: 友好的错误提示和解决建议
-
-## 📖 使用指南
-
-### 📁 准备工作
-
-1. **目录结构要求**
-   ```
-   工作目录/
-   ├── 班组1/           # 例如：土方组
-   │   ├── image1.jpg
-   │   ├── image2.png
-   │   └── ...
-   ├── 班组2/           # 例如：钢筋组
-   │   ├── photo1.jpg
-   │   └── ...
-   └── 班组3/           # 例如：混凝土组
-       └── ...
-   ```
-
-2. **图片要求**
-   - 支持格式：JPG、PNG、GIF、BMP、WEBP
-   - 建议分辨率：1920x1080或更高
-   - 文件命名：任意名称（系统会自动重命名）
-
-### 🎯 操作步骤
-
-#### 第一步：启动应用
-- 双击应用程序图标启动
-
-#### 第二步：选择工作目录
-1. 点击 **"浏览"** 按钮
-2. 选择包含所有班组文件夹的根目录
-3. 系统自动检测班组并显示确认对话框
-
-#### 第三步：配置项目信息（可选）
-1. 点击 **"🏷️ 项目配置"** 按钮
-2. 修改以下信息：
-   - **项目名称**: 例如"科特迪瓦邦杜库边境路"
-   - **施工区域**: 例如"项目营地"
-   - **施工内容**: 例如"每日班前教育"
-3. 点击 **"💾 保存"** 确认更改
-
-#### 第四步：调整班组设置（可选）
-1. 点击 **"⚙️ 配置班组"** 按钮
-2. 可以调整：
-   - **处理月份**: 设置图片的月份信息
-   - **处理天数**: 设置需要处理的天数
-   - **起始日期**: 设置水印时间的起始日期
-   - **输出编号**: 设置输出文件夹名称
-3. 支持批量设置和单独编辑
-
-#### 第五步：开始处理
-1. 点击 **"🎯 开始处理"** 按钮
-2. 系统开始自动处理：
-   - 图片格式统一（转换为PNG）
-   - 尺寸调整（1920x1080）
-   - 添加项目水印
-   - 生成Excel报告
-3. 可随时点击 **"⏹️ 停止处理"** 中断操作
-
-#### 第六步：查看结果
-1. 处理完成后，点击 **"📁 打开结果"** 查看输出
-2. 结果位置：
-   - **水印图片**: `工作目录/水印后/各班组文件夹/`
-   - **Excel报告**: `工作目录/水印后/图片合集.xlsx`
-
-### 💡 使用技巧
-
-- **批量配置**: 使用"批量设置月份"功能快速配置所有班组
-- **进度监控**: 观察进度条和状态提示了解处理进展
-- **中断恢复**: 如需停止，点击停止按钮等待安全中断
-- **结果检查**: 处理完成后检查日志确保所有班组都成功处理
-
-## 👨‍💻 开发指南
-
-### 🏗️ 项目结构
-
-```
-GUI/
-├── banduku_gui_fixed.py    # 主程序文件
-├── requirements.txt        # 依赖列表
-├── README.md              # 项目文档
-├── dist/                  # 打包输出目录
-└── build/                 # 打包临时文件
-```
-
-### 🔧 核心组件
-
-#### 1. BandukuGUI 类
-- **职责**: 图形用户界面管理
-- **关键方法**:
-  - `scan_groups_from_directory()`: 智能班组检测
-  - `configure_project()`: 项目配置管理
-  - `toggle_processing()`: 处理控制逻辑
-
-#### 2. BandukuProcessor 类
-- **职责**: 图片处理和业务逻辑
-- **关键方法**:
-  - `process_single_group()`: 单班组处理流程
-  - `add_date_watermark()`: 水印添加算法
-  - `generate_excel_report()`: Excel报告生成
-
-### 🛠️ 开发环境搭建
-
-1. **Python环境**
-   ```bash
-   # 推荐使用Python 3.8+
    python -m venv venv
-   source venv/bin/activate  # Linux/macOS
-   # 或
-   venv\Scripts\activate     # Windows
-   ```
-
-2. **依赖安装**
-   ```bash
+   source venv/bin/activate  # On Windows: venv\\Scripts\\activate
    pip install -r requirements.txt
    ```
 
-3. **开发调试**
+3. **Run Development Version**
    ```bash
-   # 直接运行主程序
-   python banduku_gui_fixed.py
-   
-   # 或使用IDE调试模式
+   python batch_watermark.py
    ```
 
-### 📦 打包部署
+### For End Users
 
-#### 基本打包
-```bash
-# 推荐：目录模式（兼容性更好）
-pyinstaller --onedir --windowed --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
+See [USER_GUIDE.md](USER_GUIDE.md) for detailed installation and usage instructions.
 
-# 可选：单文件模式（体积更小，但可能有兼容性问题）
-pyinstaller --onefile --windowed --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
-```
+## 🔧 Technology Stack
 
-#### 高级配置
-```bash
-# 添加图标
-pyinstaller --onedir --windowed --icon=app.icns --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
+### Core Technologies
+- **Python 3.8+** - Primary development language
+- **Tkinter** - Cross-platform GUI framework
+- **Pillow (PIL)** - Advanced image processing capabilities
+- **OpenPyXL** - Excel file manipulation and image embedding
+- **PyInstaller** - Application packaging and distribution
 
-# 排除不需要的模块
-pyinstaller --onedir --windowed --exclude-module=matplotlib --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
-```
-
-### 🔍 代码规范
-
-#### 命名约定
-- **类名**: PascalCase (例如: `BandukuProcessor`)
-- **方法名**: snake_case (例如: `process_single_group`)
-- **常量**: UPPER_SNAKE_CASE (例如: `DEFAULT_GROUP_TEMPLATE`)
-
-#### 注释规范
-```python
-def add_date_watermark(self, image_path, output_path, date_str, group_name):
-    """添加日期水印到图片
-    
-    Args:
-        image_path (str): 输入图片路径
-        output_path (str): 输出图片路径
-        date_str (str): 日期字符串 (YYYYMMDD格式)
-        group_name (str): 班组名称
-    
-    Returns:
-        bool: 处理是否成功
-    """
-```
-
-### 🧪 测试指南
-
-#### 单元测试
-```python
-# 测试用例示例
-def test_watermark_generation():
-    processor = BandukuProcessor(test_dir, mock_gui, test_config)
-    result = processor.add_date_watermark(
-        "test_input.jpg", 
-        "test_output.jpg", 
-        "20250601", 
-        "测试班组"
-    )
-    assert result is True
-```
-
-#### 集成测试
-1. 准备测试数据目录结构
-2. 运行完整处理流程
-3. 验证输出结果的正确性
-
-### 🚀 扩展开发
-
-#### 添加新功能
-1. **水印样式自定义**
-   - 修改 `add_date_watermark()` 方法
-   - 在 `watermark_config` 中添加新配置项
-
-2. **支持新的图片格式**
-   - 更新 `PROCESS_CONFIG["支持格式"]` 列表
-   - 测试格式兼容性
-
-3. **导出格式扩展**
-   - 参考 `generate_excel_report()` 方法
-   - 实现 PDF、Word 等格式导出
-
-#### 性能优化
-- **多线程处理**: 利用 `threading` 模块并行处理图片
-- **内存优化**: 使用生成器处理大量图片文件
-- **缓存机制**: 缓存已处理的图片信息
-
-## 🔧 技术栈
-
-### 核心技术
-- **Python 3.8+** - 主要开发语言
-- **Tkinter** - 图形用户界面框架
-- **Pillow (PIL)** - 图像处理库
-- **OpenPyXL** - Excel文件操作库
-- **PyInstaller** - 应用程序打包工具
-
-### 系统架构
+### Architecture Components
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   GUI Layer    │    │  Business Logic  │    │   Data Layer    │
-│                │    │                  │    │                 │
-│ • BandukuGUI   │◄──►│ • BandukuProcessor│◄──►│ • File System   │
-│ • Tkinter UI   │    │ • Image Processing│    │ • Image Files   │
-│ • Event Handle │    │ • Excel Generation│    │ • Config Data   │
+│   GUI Layer     │    │  Business Logic  │    │   Data Layer    │
+│                 │    │                  │    │                 │
+│ BatchWatermarkGUI│◄──►│ WatermarkProcessor│◄──►│ File System     │
+│ Tkinter Interface│    │ Image Processing │    │ Image Files     │
+│ Event Handling  │    │ Excel Generation │    │ Configuration   │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
-### 依赖版本
+### Dependencies
 ```
-Pillow>=10.0.0      # 图像处理，支持多种格式
-openpyxl>=3.1.0     # Excel文件操作，支持图片嵌入
-pyinstaller>=6.0.0  # 应用打包，生成可执行文件
+Pillow>=10.0.0      # Image processing and format support
+openpyxl>=3.1.0     # Excel file operations with image embedding
+pyinstaller>=6.0.0  # Application packaging for distribution
 ```
 
-## ❓ 常见问题
+## 🏗️ Project Structure
 
-### 🖥️ 使用问题
+```
+BatchWatermark/
+├── batch_watermark.py      # Main application file
+├── requirements.txt        # Python dependencies
+├── README.md              # English developer documentation
+├── README_CN.md           # Chinese developer documentation
+├── USER_GUIDE.md          # English user manual
+├── USER_GUIDE_CN.md       # Chinese user manual
+├── app_icon_design.html   # Icon design templates
+├── assets/                # Application assets
+│   ├── app_icon.ico       # Windows application icon
+│   ├── app_icon.icns      # macOS application icon
+│   └── screenshots/       # Application screenshots
+├── scripts/               # Build and utility scripts
+│   └── build.py          # Automated build script
+├── dist/                  # Built application outputs
+├── build/                 # Temporary build files
+└── .github/              # GitHub Actions workflows
+    └── workflows/
+        └── build.yml     # Automated build pipeline
+```
 
-**Q: 应用启动后看不到界面怎么办？**
-A: 
-- macOS: 检查系统偏好设置中的安全性设置，允许运行未知开发者的应用
-- Windows: 右键选择"以管理员身份运行"
-- 确保系统支持图形界面
+## ⚙️ Installation
 
-**Q: 为什么检测不到班组文件夹？**
-A: 
-- 确保每个班组文件夹内包含图片文件
-- 检查文件夹名称不包含特殊字符
-- 避免使用系统保留名称（如 `.DS_Store`, `cache` 等）
+### Prerequisites
+- Python 3.8 or higher
+- pip package manager
+- Git (for development)
 
-**Q: 处理过程中出现内存不足怎么办？**
-A:
-- 关闭其他不必要的应用程序
-- 分批处理大量图片
-- 检查可用磁盘空间是否充足
+### Development Setup
 
-**Q: 生成的Excel文件无法打开？**
-A:
-- 确保安装了Microsoft Office或兼容软件
-- 检查文件是否被其他程序占用
-- 尝试复制到其他位置再打开
+1. **Install Python Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 🛠️ 开发问题
+2. **Verify Installation**
+   ```bash
+   python batch_watermark.py
+   ```
 
-**Q: 如何添加新的水印元素？**
-A: 修改 `add_date_watermark()` 方法中的 `text_lines` 列表，添加新的文本行。
+3. **Run Tests** (if available)
+   ```bash
+   python -m pytest tests/
+   ```
 
-**Q: 如何支持更多图片格式？**
-A: 在 `PROCESS_CONFIG["支持格式"]` 中添加新的文件扩展名。
+## 🛠️ Development
 
-**Q: 如何修改默认的图片尺寸？**
-A: 修改 `PROCESS_CONFIG["目标宽度"]` 和 `PROCESS_CONFIG["目标高度"]` 的值。
+### Core Components
 
-**Q: 打包时提示缺少依赖怎么办？**
-A: 
+#### BatchWatermarkGUI Class
+- **Purpose**: Manages the graphical user interface and user interactions
+- **Key Methods**:
+  - `scan_groups_from_directory()`: Intelligent folder detection and analysis
+  - `configure_project()`: Project information management interface
+  - `toggle_processing()`: Process control and state management
+
+#### WatermarkProcessor Class
+- **Purpose**: Handles image processing and business logic operations
+- **Key Methods**:
+  - `process_single_group()`: Complete workflow for individual image groups
+  - `add_date_watermark()`: Advanced watermark application with custom layouts
+  - `generate_excel_report()`: Comprehensive Excel report creation
+
+### Code Style Guidelines
+
+#### Naming Conventions
+- **Classes**: PascalCase (e.g., `BatchWatermarkGUI`)
+- **Methods**: snake_case (e.g., `process_single_group`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_GROUP_TEMPLATE`)
+
+#### Documentation Standards
+```python
+def add_date_watermark(self, image_path, output_path, date_str, group_name):
+    \"\"\"Apply date watermark to image with project information.
+    
+    Args:
+        image_path (str): Input image file path
+        output_path (str): Output image file path
+        date_str (str): Date string in YYYYMMDD format
+        group_name (str): Group identifier for watermark
+    
+    Returns:
+        bool: True if watermark application successful
+        
+    Raises:
+        PIL.UnidentifiedImageError: If image format is unsupported
+        IOError: If file operations fail
+    \"\"\"
+```
+
+### Adding New Features
+
+#### Watermark Customization
+1. Modify the `add_date_watermark()` method in `WatermarkProcessor`
+2. Update `watermark_config` dictionary in `BatchWatermarkGUI.__init__()`
+3. Add configuration UI elements in `configure_project()`
+
+#### Image Format Support
+1. Update `PROCESS_CONFIG["支持格式"]` list
+2. Test format compatibility with PIL
+3. Update documentation
+
+#### Export Format Extensions
+1. Reference `generate_excel_report()` implementation
+2. Create new export methods (e.g., `generate_pdf_report()`)
+3. Add UI controls for format selection
+
+## 📦 Building
+
+### 🚀 Automated Build (Recommended)
+
+The easiest way to build BatchWatermark is using our automated build script:
+
 ```bash
-# 确保安装了所有依赖
-pip install -r requirements.txt
-
-# 清理之前的构建文件
-rm -rf dist build *.spec
-
-# 重新打包
-pyinstaller --onedir --windowed --name="邦杜库图片处理系统_完整版" banduku_gui_fixed.py
+# Run the automated build script
+python scripts/build.py
 ```
 
-### 🔧 系统兼容性
+**Features of the automated build script:**
+- 🔍 **Smart Dependency Detection**: Automatically checks for required dependencies
+- 🎨 **Intelligent Icon Handling**: Detects and converts icons to appropriate formats (ICO/ICNS)
+- 🌍 **Cross-Platform Support**: Builds native applications for Windows, macOS, and Linux
+- 📦 **Distribution Package**: Creates complete distribution packages with documentation
+- ✅ **Error Handling**: Provides clear error messages and recovery suggestions
 
-**支持的操作系统:**
-- macOS 10.14+
-- Windows 10+
-- Ubuntu 18.04+
+**Build Script Options:**
+```bash
+# Basic build
+python scripts/build.py
 
-**Python版本要求:**
-- Python 3.8 或更高版本
-- 推荐使用 Python 3.9-3.11
+# Clean build (removes previous build files)
+python scripts/build.py --clean
 
-## 📝 更新日志
+# Build with custom output directory
+python scripts/build.py --output-dir /path/to/output
+```
 
-### v1.0.0 (2025-01-01)
-- 🎉 首次发布
-- ✨ 智能班组检测功能
-- ✨ 批量水印添加功能
-- ✨ Excel报告自动生成
-- ✨ 可视化配置界面
-- ✨ 实时进度监控
-- ✨ 处理中断控制
+### Manual Build Commands
 
-### 即将推出
-- 📅 支持更多日期格式
-- 🎨 水印样式自定义
-- 📄 PDF报告导出
-- 🔄 批处理模式优化
-- 🌐 多语言界面支持
+If you prefer manual control or need to customize the build process:
+
+#### Basic Build
+```bash
+# Recommended: Directory mode for better compatibility
+pyinstaller --onedir --windowed --name="BatchWatermark" batch_watermark.py
+
+# Alternative: Single file mode for smaller distribution
+pyinstaller --onefile --windowed --name="BatchWatermark" batch_watermark.py
+```
+
+#### Advanced Build Configuration
+```bash
+# With custom icon
+pyinstaller --onedir --windowed --icon=assets/app_icon.ico --name="BatchWatermark" batch_watermark.py
+
+# Excluding unnecessary modules for smaller size
+pyinstaller --onedir --windowed --exclude-module=matplotlib --name="BatchWatermark" batch_watermark.py
+```
+
+### Cross-Platform Considerations
+- **Windows**: Use `.ico` icon format
+- **macOS**: Use `.icns` icon format  
+- **Linux**: Standard PNG icons work well
+
+## 🧪 Testing
+
+### Unit Testing
+```python
+import unittest
+from batch_watermark import WatermarkProcessor, BatchWatermarkGUI
+
+class TestWatermarkProcessor(unittest.TestCase):
+    def setUp(self):
+        self.processor = WatermarkProcessor(test_dir, mock_gui, test_config)
+    
+    def test_watermark_generation(self):
+        result = self.processor.add_date_watermark(
+            "test_input.jpg", 
+            "test_output.jpg", 
+            "20250601", 
+            "Test Group"
+        )
+        self.assertTrue(result)
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+### Integration Testing
+1. Prepare test directory structure with sample images
+2. Run complete processing workflow
+3. Verify output quality and report accuracy
+4. Test error handling with invalid inputs
+
+### Performance Testing
+- Measure processing time for different image counts
+- Monitor memory usage during large batch operations
+- Test UI responsiveness during processing
+
+## 🤝 Contributing
+
+We welcome contributions to BatchWatermark! Please follow these guidelines:
+
+### Getting Started
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Write tests for new functionality
+5. Ensure all tests pass
+6. Commit your changes (`git commit -m 'Add amazing feature'`)
+7. Push to your branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+### Code Review Process
+- All changes require review before merging
+- Ensure code follows style guidelines
+- Include appropriate documentation updates
+- Add tests for new features
+
+### Bug Reports
+When reporting bugs, please include:
+- Operating system and version
+- Python version
+- Steps to reproduce the issue
+- Expected vs actual behavior
+- Screenshots if applicable
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **PIL/Pillow Team** - Excellent image processing capabilities
+- **OpenPyXL Developers** - Robust Excel file manipulation
+- **Python Community** - Outstanding ecosystem and support
+
+## 📞 Support
+
+- **Documentation**: See [USER_GUIDE.md](USER_GUIDE.md) for usage instructions
+- **Issues**: Report bugs and feature requests via GitHub Issues
+- **Discussions**: Join community discussions for questions and ideas
 
 ---
 
-## 📞 技术支持
-
-如果您在使用过程中遇到问题：
-
-1. **查看日志**: 程序运行时的详细日志可以帮助诊断问题
-2. **检查环境**: 确保Python版本和依赖库版本符合要求
-3. **重新安装**: 尝试重新安装依赖或重新打包应用
-4. **系统兼容性**: 确认操作系统版本支持
-
-## 📄 许可证
-
-本项目仅供邦杜库项目内部使用。
-
----
-
-**开发团队** | **最后更新**: 2025-07-01
+**Developed with ❤️ for the developer community**  
+**Last Updated**: 2025-07-01  
+**Version**: 1.0.0
