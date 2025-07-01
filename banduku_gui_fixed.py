@@ -156,8 +156,8 @@ class BandukuGUI:
             
             # 如果包含图片文件，认为是班组文件夹
             if image_count > 0:
-                # 生成输出文件夹编号
-                output_folder = str(len(detected_groups) + 1)
+                # 使用班组名称作为默认输出文件夹编号
+                output_folder = folder_name
                 
                 detected_groups[folder_name] = {
                     "folder": folder_name,
@@ -433,6 +433,9 @@ class BandukuGUI:
                     self.groups_config[new_name] = self.groups_config.pop(group_name)
                     config = self.groups_config[new_name]
                     config["folder"] = new_name
+                else:
+                    # 班组名称未改变，直接获取配置
+                    config = self.groups_config[group_name]
                 
                 config["班组名称"] = new_name
                 config["月份"] = new_month
