@@ -1,0 +1,11 @@
+# 邦杜库图片处理系统依赖列表
+# 安装命令: pip install -r requirements.txt
+
+# 图像处理库
+Pillow>=10.0.0
+
+# Excel文件处理库  
+openpyxl>=3.1.0
+
+# 打包工具（可选，仅打包时需要）
+pyinstaller>=6.0.0
