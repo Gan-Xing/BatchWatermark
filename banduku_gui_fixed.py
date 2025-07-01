@@ -15,6 +15,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFile
 import threading
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image as OpenpyxlImage
+from io import BytesIO
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -1021,7 +1024,132 @@ class BandukuProcessor:
         self.gui.log(f"📊 处理统计: {success_count}/{total_groups} 个班组成功")
         self.gui.log(f"⏱️  总耗时: {duration}")
         
-        return success_count == total_groups
+        # 如果所有班组都处理成功且没有被停止，则生成Excel报告
+        all_success = (success_count == total_groups)
+        if all_success and not self.gui.stop_processing:
+            self.gui.log("📊 开始生成最终Excel报告...")
+            excel_success = self.generate_excel_report()
+            if excel_success:
+                self.gui.log("✨ 完整流程已完成，包括Excel报告生成!", "SUCCESS")
+            else:
+                self.gui.log("⚠️ Excel报告生成失败，但水印处理已完成", "WARNING")
+        elif self.gui.stop_processing:
+            self.gui.log("⏹️ 处理被停止，跳过Excel报告生成", "WARNING")
+        else:
+            self.gui.log("⚠️ 部分班组处理失败，跳过Excel报告生成", "WARNING")
+        
+        return all_success
+
+    def generate_excel_report(self):
+        """生成包含所有班组图片的Excel报告"""
+        self.gui.log("📊 开始生成Excel图片报告...")
+        
+        try:
+            # 检查水印后目录是否存在
+            if not self.watermark_dir.exists():
+                self.gui.log("❌ 水印后目录不存在，无法生成Excel报告", "ERROR")
+                return False
+            
+            # 获取所有班组输出文件夹
+            group_folders = [d for d in self.watermark_dir.iterdir() if d.is_dir()]
+            
+            if not group_folders:
+                self.gui.log("❌ 水印后目录中没有找到班组文件夹", "ERROR")
+                return False
+            
+            # 按文件夹名称排序
+            group_folders.sort(key=lambda x: x.name)
+            
+            # 创建Excel工作簿
+            wb = Workbook()
+            
+            self.gui.log(f"📋 发现 {len(group_folders)} 个班组文件夹，开始生成Excel...")
+            
+            for i, folder in enumerate(group_folders):
+                # 检查是否需要停止处理
+                if self.gui.stop_processing:
+                    self.gui.log("⏹️ Excel生成被中断", "WARNING")
+                    return False
+                
+                self.gui.log(f"📄 处理班组: {folder.name}")
+                
+                # 创建或选择工作表
+                if i == 0:
+                    ws = wb.active
+                    ws.title = folder.name
+                else:
+                    ws = wb.create_sheet(title=folder.name)
+                
+                # 获取文件夹中的所有图片并排序
+                images = []
+                for ext in PROCESS_CONFIG["支持格式"]:
+                    images.extend(list(folder.glob(f"*{ext}")))
+                    images.extend(list(folder.glob(f"*{ext.upper()}")))
+                
+                # 按文件名排序
+                images.sort(key=lambda x: x.name.lower())
+                
+                if not images:
+                    self.gui.log(f"⚠️ 班组 {folder.name} 中没有图片", "WARNING")
+                    continue
+                
+                row = 1  # 当前插入行
+                
+                for img_path in images:
+                    # 检查是否需要停止处理
+                    if self.gui.stop_processing:
+                        self.gui.log("⏹️ Excel生成被中断", "WARNING")
+                        return False
+                    
+                    try:
+                        # 使用PIL打开图片并转换为字节流
+                        with Image.open(img_path) as pil_img:
+                            # 转换为RGB模式以确保兼容性
+                            if pil_img.mode in ('RGBA', 'LA', 'P'):
+                                pil_img = pil_img.convert('RGB')
+                            
+                            img_byte_arr = BytesIO()
+                            pil_img.save(img_byte_arr, format='PNG')
+                            img_byte_arr.seek(0)
+                            
+                            # 创建openpyxl图片对象并插入Excel
+                            excel_img = OpenpyxlImage(img_byte_arr)
+                            # 调整图片大小以适应Excel显示
+                            excel_img.width = 300  # 设置图片宽度
+                            excel_img.height = 200  # 设置图片高度
+                            
+                            ws.add_image(excel_img, f"A{row}")
+                            
+                            # 为下一张图片留出空间（根据图片高度调整行间距）
+                            row += 12  # 每张图片间隔约12行
+                        
+                        self.gui.log(f"✅ 已添加图片: {img_path.name}")
+                        
+                    except Exception as e:
+                        self.gui.log(f"⚠️ 处理图片 {img_path.name} 时出错: {str(e)}", "WARNING")
+                        continue
+                
+                # 更新进度
+                progress = (i + 1) / len(group_folders) * 100
+                self.gui.progress_var.set(progress)
+                self.gui.status_var.set(f"正在生成Excel: {folder.name}")
+            
+            # 调整所有工作表的列宽
+            for sheet in wb:
+                sheet.column_dimensions['A'].width = 40
+            
+            # 保存Excel文件到水印后目录
+            excel_path = self.watermark_dir / "图片合集.xlsx"
+            wb.save(str(excel_path))
+            
+            self.gui.log(f"🎉 Excel报告生成完成: {excel_path}", "SUCCESS")
+            self.gui.log(f"📊 包含 {len(group_folders)} 个班组的图片数据", "SUCCESS")
+            
+            return True
+            
+        except Exception as e:
+            self.gui.log(f"❌ 生成Excel报告时出错: {str(e)}", "ERROR")
+            return False
 
 def main():
     root = tk.Tk()
