@@ -98,7 +98,7 @@ class BatchWatermarkGUI:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # 标题
-        title_label = ttk.Label(main_frame, text="🚀 批量水印工具", 
+        title_label = ttk.Label(main_frame, text="🚀 批量水印工具 - by GX", 
                                font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
         
@@ -118,11 +118,11 @@ class BatchWatermarkGUI:
         control_frame.grid(row=2, column=0, columnspan=2, pady=10)
         
         self.start_btn = ttk.Button(control_frame, text="🎯 开始处理", command=self.toggle_processing)
-        self.start_btn.pack(side=tk.LEFT, padx=(0, 10))
+        self.start_btn.pack(side=tk.LEFT, padx=(0, 5))
         
-        ttk.Button(control_frame, text="⚙️ 配置班组", command=self.configure_groups).pack(side=tk.LEFT, padx=(0, 10))
-        ttk.Button(control_frame, text="🏷️ 项目配置", command=self.configure_project).pack(side=tk.LEFT, padx=(0, 10))
-        ttk.Button(control_frame, text="📁 打开结果", command=self.open_results).pack(side=tk.LEFT)
+        ttk.Button(control_frame, text="⚙️ 配置班组", command=self.configure_groups).pack(side=tk.LEFT, padx=(5, 5))
+        ttk.Button(control_frame, text="🏷️ 项目配置", command=self.configure_project).pack(side=tk.LEFT, padx=(5, 5))
+        ttk.Button(control_frame, text="📁 打开结果", command=self.open_results).pack(side=tk.LEFT, padx=(5, 0))
         
         # 进度条
         self.progress_var = tk.DoubleVar()
