@@ -1,0 +1,64 @@
+# Build and Distribution
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller
+*.spec
+*.manifest
+*.exe
+*.app
+*.dmg
+*.pkg
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+*.backup
+
+# Test outputs
+test_outputs/
+temp_test/
+output_images/
+input_images/
+水印后/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Documentation builds
+docs/_build/
+
+# Windows batch files for building
+build_windows.bat

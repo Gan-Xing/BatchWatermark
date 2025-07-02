@@ -75,6 +75,22 @@ class BatchWatermarkGUI:
         }
         
         self.setup_ui()
+    
+    def get_image_files(self, directory):
+        """获取目录中的所有图片文件，跨平台兼容且避免重复"""
+        if not directory.exists():
+            return []
+        
+        supported_extensions = {ext.lower() for ext in PROCESS_CONFIG["支持格式"]}
+        image_files = []
+        
+        for file_path in directory.iterdir():
+            if file_path.is_file():
+                # 将扩展名转为小写进行比较
+                if file_path.suffix.lower() in supported_extensions:
+                    image_files.append(file_path)
+        
+        return image_files
         
     def setup_ui(self):
         # 主框架
@@ -157,10 +173,8 @@ class BatchWatermarkGUI:
                 continue
             
             # 检查文件夹中是否包含图片文件
-            image_count = 0
-            for ext in PROCESS_CONFIG["支持格式"]:
-                image_count += len(list(subdir.glob(f"*{ext}")))
-                image_count += len(list(subdir.glob(f"*{ext.upper()}")))
+            image_files = self.get_image_files(subdir)
+            image_count = len(image_files)
             
             # 如果包含图片文件，认为是班组文件夹
             if image_count > 0:
@@ -612,6 +626,22 @@ class WatermarkProcessor:
         self.gui.log(f"📁 工作目录: {self.base_dir}")
         self.gui.log(f"📊 配置班组数量: {len(self.groups_config)}")
 
+    def get_image_files(self, directory):
+        """获取目录中的所有图片文件，跨平台兼容且避免重复"""
+        if not directory.exists():
+            return []
+        
+        supported_extensions = {ext.lower() for ext in PROCESS_CONFIG["支持格式"]}
+        image_files = []
+        
+        for file_path in directory.iterdir():
+            if file_path.is_file():
+                # 将扩展名转为小写进行比较
+                if file_path.suffix.lower() in supported_extensions:
+                    image_files.append(file_path)
+        
+        return image_files
+
     def clear_directory(self, directory):
         """清空目录"""
         if directory.exists():
@@ -627,21 +657,15 @@ class WatermarkProcessor:
         if not directory.exists():
             return 0
         
-        image_count = 0
-        for ext in PROCESS_CONFIG["支持格式"]:
-            image_count += len(list(directory.glob(f"*{ext}")))
-            image_count += len(list(directory.glob(f"*{ext.upper()}")))
-        return image_count
+        image_files = self.get_image_files(directory)
+        return len(image_files)
 
     def rename_images_in_directory(self, directory):
         """重命名目录中的图片文件"""
         self.gui.log("开始重命名图片文件...")
         
         # 获取所有图片文件
-        image_files = []
-        for ext in PROCESS_CONFIG["支持格式"]:
-            image_files.extend(list(directory.glob(f"*{ext}")))
-            image_files.extend(list(directory.glob(f"*{ext.upper()}")))
+        image_files = self.get_image_files(directory)
         
         if not image_files:
             self.gui.log("目录中没有找到图片文件", "WARNING")
@@ -773,14 +797,11 @@ class WatermarkProcessor:
         self.clear_directory(self.input_dir)
         
         # 复制图片到input目录
+        image_files = self.get_image_files(group_path)
         copied_count = 0
-        for ext in PROCESS_CONFIG["支持格式"]:
-            for img_file in group_path.glob(f"*{ext}"):
-                shutil.copy2(img_file, self.input_dir)
-                copied_count += 1
-            for img_file in group_path.glob(f"*{ext.upper()}"):
-                shutil.copy2(img_file, self.input_dir)
-                copied_count += 1
+        for img_file in image_files:
+            shutil.copy2(img_file, self.input_dir)
+            copied_count += 1
                 
         self.gui.log(f"已复制 {copied_count} 张图片到输入目录")
         return copied_count
@@ -883,10 +904,7 @@ class WatermarkProcessor:
         self.clear_directory(self.output_dir)
         
         # 获取输入目录中的图片
-        image_files = []
-        for ext in PROCESS_CONFIG["支持格式"]:
-            image_files.extend(list(self.input_dir.glob(f"*{ext}")))
-            image_files.extend(list(self.input_dir.glob(f"*{ext.upper()}")))
+        image_files = self.get_image_files(self.input_dir)
         
         if not image_files:
             self.gui.log("输入目录中没有找到图片文件", "ERROR")
@@ -937,10 +955,7 @@ class WatermarkProcessor:
         self.clear_directory(target_dir)
         
         # 获取输出目录中的图片并排序
-        output_images = []
-        for ext in PROCESS_CONFIG["支持格式"]:
-            output_images.extend(list(self.output_dir.glob(f"*{ext}")))
-            output_images.extend(list(self.output_dir.glob(f"*{ext.upper()}")))
+        output_images = self.get_image_files(self.output_dir)
         
         output_images.sort(key=lambda x: x.name)
         
@@ -1081,10 +1096,7 @@ class WatermarkProcessor:
                     ws = wb.create_sheet(title=folder.name)
                 
                 # 获取文件夹中的所有图片并排序
-                images = []
-                for ext in PROCESS_CONFIG["支持格式"]:
-                    images.extend(list(folder.glob(f"*{ext}")))
-                    images.extend(list(folder.glob(f"*{ext.upper()}")))
+                images = self.get_image_files(folder)
                 
                 # 按文件名排序
                 images.sort(key=lambda x: x.name.lower())
